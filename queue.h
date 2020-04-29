@@ -2,14 +2,15 @@
 #define HEADER_FILE
 
 
-struct element {
+typedef struct element {
   int type; //Machine type
   int time; //Using time
-};
+}element;
 
 typedef struct queue {
 	// Define the struct yourself
-	int param1;
+  struct element *arrayElementos;
+	int length;
 }queue;
 
 queue* queue_init (int size);
