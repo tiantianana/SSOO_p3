@@ -9,9 +9,10 @@
 
 //To create a queue
 queue* queue_init(int size){
-
     queue * q = (queue *)malloc(sizeof(queue));
-
+    q->length = size; //tamaño maximo
+    q->n_elementos= 0;
+    q->arrayElementos = 0;
     return q;
 }
 
@@ -32,16 +33,24 @@ struct element* queue_get(queue *q) {
 
 //To check queue state
 int queue_empty(queue *q){
-    
-    return 0;
+    if(q->n_elementos<=0){
+        return 1;
+    }else{
+        return 0;
+    }
 }
 
 int queue_full(queue *q){
-    
-    return 0;
+    if(q->n_elementos >= q->length){
+        return 1;
+    }else{
+        return 0;
+    }
 }
 
 //To destroy the queue and free the resources
 int queue_destroy(queue *q){
+    //Si la cola esta llena no podemos añadir mas.
+    free(q);
     return 0;
 }
