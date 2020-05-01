@@ -11,6 +11,7 @@ typedef struct queue {
 	// Define the struct yourself
   struct element *arrayElementos;
 	int length;
+  int n_elementos; // numero de operaciones dentro del buffer
 }queue;
 
 queue* queue_init (int size);

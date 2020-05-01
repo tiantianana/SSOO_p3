@@ -22,7 +22,7 @@
  */
 int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Producers> <buff. Size>
 
-    if(argc < 4)
+    if(argc != 4)
 	{
 		printf("No se han pasado suficientes argumentos\n");
 		return -1;
@@ -37,7 +37,7 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 		exit(-1);
 	}
 
-    // INSERTAR DATOS (operaciones) en un array de elementos
+    // --------- INSERTAR DATOS (operaciones) en un array de elementos ---------------------------------------------------
 
     int numeroOperaciones; 
     fscanf(id_fichero, "%d", &numeroOperaciones);
@@ -48,8 +48,6 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
     for(int i = 0; i < numeroOperaciones; i++) { // insertar cada linea
         element nuevaOperacion;
         int indice;
-        int tipo;
-        int tiempo;
         fscanf(id_fichero, "%d", &indice);
         fscanf(id_fichero, "%d", &nuevaOperacion.type);
         fscanf(id_fichero, "%d", &nuevaOperacion.time);
@@ -66,12 +64,18 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 
 
 
-/* ----------- CREAR BUFFER CIRCULAR (reservar el espacio especificado) ---------------------
+/* ----------- CREAR BUFFER CIRCULAR (reservar el espacio especificado) ---------------------*/
+
     queue bufferCircular;
     bufferCircular.length = argv[3];
     bufferCircular.arrayElementos = malloc(bufferCircular.length * sizeof(struct element));
     
-*/
+    queue_init(argv[3]); 
+
+// ...
+    
+    
+
 /* ------------ CREAR HILOS, SEMÁFOROS Y VARIABLES CONDICIONALES------------------------------
 // A los hilos hay que pasarles el rango de operaciones a insertar en el buffer, y la dirección de inicio del buffer (?). 
     
