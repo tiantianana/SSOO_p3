@@ -9,7 +9,7 @@ typedef struct element {
 
 typedef struct queue {
 	// Define the struct yourself
-  struct element *arrayElementos;
+  struct element *colaElementos;
 	int length;
   int n_elementos; // numero de operaciones dentro del buffer
 }queue;
@@ -21,4 +21,6 @@ struct element * queue_get(queue *q);
 int queue_empty (queue *q);
 int queue_full(queue *q);
 
+void productor ();
+void consumidor ();
 #endif

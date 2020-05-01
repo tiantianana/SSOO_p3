@@ -12,7 +12,7 @@ queue* queue_init(int size){
     queue * q = (queue *)malloc(sizeof(queue));
     q->length = size; //tamaño maximo
     q->n_elementos= 0;
-    q->arrayElementos = 0;
+    q->colaElementos = malloc(size * sizeof(struct element));
     return q;
 }
 

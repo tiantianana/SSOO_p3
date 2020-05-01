@@ -20,6 +20,11 @@
  * @param argv
  * @return
  */
+
+pthread_mutex_t mutex;
+pthread_cond_t no_lleno;
+pthread_cond_t no_vacio;
+
 int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Producers> <buff. Size>
 
     if(argc != 4)
@@ -60,57 +65,75 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
         printf("%d %d \n", arrayOperaciones[i].type, arrayOperaciones[i].time);
     } 
 
-    free(arrayOperaciones);
-
-
-
 /* ----------- CREAR BUFFER CIRCULAR (reservar el espacio especificado) ---------------------*/
 
-    queue bufferCircular;
-    bufferCircular.length = argv[3];
-    bufferCircular.arrayElementos = malloc(bufferCircular.length * sizeof(struct element));
-    
-    queue_init(argv[3]); 
+    queue *bufferCircular =  queue_init(atoi(argv[3]));
 
-// ...
-    
-    
+    // DIVIDIR OPERACIONES (INDICES) ENTRE HILOS ...
 
-/* ------------ CREAR HILOS, SEMÁFOROS Y VARIABLES CONDICIONALES------------------------------
-// A los hilos hay que pasarles el rango de operaciones a insertar en el buffer, y la dirección de inicio del buffer (?). 
-    
-    while(1 -> numProd){
-        pthread_create(&th1, null, productor, null);
+    pthread_mutex_init(&mutex, NULL);
+    pthread_cond_init(&no_lleno, NULL);
+    pthread_cond_init(&no_vacio,NULL);
+
+
+// Definimos en un array el numero de operaciones de cada productor (ej: 7 operaciones para 5 hilos = 2,2,1,1,1)
+    int *operacionesPorProductor [numeroProductores];
+    int k = numeroOperaciones;
+    while(k > 0){
+        for(int i = 0; i < numeroProductores; i++){
+            if(k > 0){
+            operacionesPorProductor[i] ++;
+            k--;
+            }
+        }
     }
-    pthread_create(&th1, null, consumidor, null);
 
-// ESPERAR A QUE TERMINEN TODOS LOS HILOS Y DESTRUIR LOS SEMAFOROS Y VARIABLES CONDICIONALES
-// Recoger la suma total del hilo consumidor (la tiene que devolver)
+/*
+    int inicio = 0;
+    int final = 0;
+    pthread_t *threads[numeroProductores];
+    int i = 0;
+    while(i < numeroProductores){
+       // final = final + operacionesPorProductor[i] -1; // 1 + 2 - 1 ->3
+        pthread_create(&threads[i], NULL, productor, NULL); // PASAR LOS INDICES DE OPERACIONES
+       // inicio = final + 1; // 2
+        i++;
+    }
 
-    pthread_join();
-    ....
+    pthread_t th_productor;
+    pthread_create(&th_productor, NULL, consumidor, NULL);
 
-    pthread_mutex_destroy()
-    destroy variables consumidor
+    int j = 0;
+
+
+    while(j < numeroProductores){
+
+        pthread_join(threads[j], NULL);
+        j++;
+    }
+    pthread_join(threads[j], NULL); // OBTENER VALOR DE RETORNO (COSTE TOTAL) (?)
+    pthread_mutex_destroy(&mutex);
+    pthread_cond_destroy(&no_lleno);
+    pthread_cond_destroy(&no_vacio);
 */
 
+    free(arrayOperaciones);
     printf("Total: %i €.\n", total);
     return 0;
+    
 }
 
 
 
 // ---------- CREAR LAS FUNCIONES PRODUCTOR Y CONSUMIDOR (y definirlas en queue.h) ------------
 
-/*
-void productor(int inicio, int fin){
-    ...
+
+void productor(){ // argumentos int inicio, int fin
+//    ...
 
 
 
 }
-void consumidor(int inicio, int fin){
-    ...
+void consumidor(){ // argumentos int inicio, int fin
+   // ...
 }
-
-*/
