@@ -101,39 +101,42 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
     } 
 
 
-// /*
     int inicio = 0;
     int final = 0;
-    pthread_t *threads[numeroProductores];
+    pthread_t threads[numeroProductores];
     int i = 0;
 
 // 0 1 | 2 3 | 4 | 5 | 6
 
+
     while(i < numeroProductores){
         final = inicio + operacionesPorProductor[i] - 1; // 
-        pthread_create(threads[i], NULL, productor, NULL); // PASAR LOS INDICES DE OPERACIONES
+        pthread_create(&threads[i], NULL, productor, NULL); // PASAR LOS INDICES DE OPERACIONES
         inicio = final + 1; // 2
         i++;
     }
 
-    pthread_t th_productor;
+
+    pthread_t *th_productor;
     pthread_create(th_productor, NULL, consumidor, NULL);
 
+
     int j = 0;
-    while(j < numeroProductores){
+    while(j < numeroProductores) {
         pthread_join(threads[j], NULL);
         j++;
     }
-    pthread_join(threads[j], NULL); // OBTENER VALOR DE RETORNO (COSTE TOTAL) (?)
+
+    //pthread_join(threads[j], NULL); // OBTENER VALOR DE RETORNO (COSTE TOTAL) (?)
     pthread_mutex_destroy(&mutex);
     pthread_cond_destroy(&no_lleno);
     pthread_cond_destroy(&no_vacio);
-// */
+
 
     free(arrayOperaciones);
     printf("Total: %i €.\n", total);
     return 0;
-    
+
 }
 
 
@@ -141,12 +144,11 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 // ---------- CREAR LAS FUNCIONES PRODUCTOR Y CONSUMIDOR (y definirlas en queue.h) ------------
 
 
-void productor(){ // argumentos int inicio, int fin
+void *productor() { // argumentos int inicio, int fin
 //    ...
 
-
-
 }
-void consumidor(){ // argumentos int inicio, int fin
-   // ...
+void *consumidor() { // argumentos int inicio, int fin
+    // ...
+
 }
