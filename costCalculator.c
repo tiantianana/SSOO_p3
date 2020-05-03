@@ -82,6 +82,9 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
     int k = numeroOperaciones;
     while(k > 0){
         for(int i = 0; i < numeroProductores; i++){
+            if(k = numeroOperaciones){ // Primera iteracion
+            operacionesPorProductor[i] = 0;
+            }
             if(k <= 0){
                 break;
             }
