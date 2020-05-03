@@ -105,7 +105,6 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
     } 
 
 
-// /*
     int inicio = 0;
     int final = 0;
     pthread_t threads[numeroProductores];
@@ -141,7 +140,7 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
     free(arrayOperaciones);
     printf("Total: %i €.\n", total);
     return 0;
-    
+
 }
 
 
@@ -149,24 +148,11 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 // ---------- CREAR LAS FUNCIONES PRODUCTOR Y CONSUMIDOR (y definirlas en queue.h) ------------
 
 
-void *productor(){ // int inicio, int final
-  /*  int i = inicio;
-    element operacion;
-    for(i; i < final; i++ ) // desde el índice de inicio (i) hasta el final
-        operacion = arrayOperaciones[i]; // produzco el dato = operacion correspondiente del array de operaciones (global)
-        {
-        pthread_mutex_lock(&mutex);
-        while (queue_full(bufferCircular) == 1) // si buffer lleno
-            pthread_cond_wait(&no_lleno, &mutex); // se bloquea 
-        bufferCircular[posProductor] = i;
-        posProductor = (posProductor + 1) % bufferCircular->length;
-        bufferCircular->n_elementos ++;
-        pthread_cond_signal(&no_vacio);
-        // buffer no vacio
-        pthread_mutex_unlock(&mutex);
-        }   
-    pthread_exit(0); */
-    }
-void *consumidor(){ // argumentos int inicio, int fin
-   // ...
+
+void *productor() { // argumentos int inicio, int fin
+//    ...
+
+}
+void *consumidor() { // argumentos int inicio, int fin
+    // ...
 }
