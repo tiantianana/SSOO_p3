@@ -14,6 +14,7 @@
 
 #define NUM_CONSUMERS 1
 
+
 /**
  * Entry point
  * @param argc
@@ -24,6 +25,9 @@
 pthread_mutex_t mutex;
 pthread_cond_t no_lleno;
 pthread_cond_t no_vacio;
+// element *arrayOperaciones;
+// queue *bufferCircular;
+//int posProductor; // Posición del buffer donde se puede escribir 
 
 int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Producers> <buff. Size>
 
@@ -104,31 +108,35 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 // /*
     int inicio = 0;
     int final = 0;
-    pthread_t *threads[numeroProductores];
+    pthread_t threads[numeroProductores];
     int i = 0;
 
 // 0 1 | 2 3 | 4 | 5 | 6
 
+
     while(i < numeroProductores){
         final = inicio + operacionesPorProductor[i] - 1; // 
-        pthread_create(threads[i], NULL, productor, NULL); // PASAR LOS INDICES DE OPERACIONES
+        pthread_create(&threads[i], NULL, productor, NULL); // PASAR LOS INDICES DE OPERACIONES
         inicio = final + 1; // 2
         i++;
     }
 
-    pthread_t th_productor;
+
+    pthread_t *th_productor;
     pthread_create(th_productor, NULL, consumidor, NULL);
 
+
     int j = 0;
-    while(j < numeroProductores){
+    while(j < numeroProductores) {
         pthread_join(threads[j], NULL);
         j++;
     }
-    pthread_join(threads[j], NULL); // OBTENER VALOR DE RETORNO (COSTE TOTAL) (?)
+
+    //pthread_join(threads[j], NULL); // OBTENER VALOR DE RETORNO (COSTE TOTAL) (?)
     pthread_mutex_destroy(&mutex);
     pthread_cond_destroy(&no_lleno);
     pthread_cond_destroy(&no_vacio);
-// */
+
 
     free(arrayOperaciones);
     printf("Total: %i €.\n", total);
@@ -141,12 +149,24 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 // ---------- CREAR LAS FUNCIONES PRODUCTOR Y CONSUMIDOR (y definirlas en queue.h) ------------
 
 
-void productor(){ // argumentos int inicio, int fin
-//    ...
-
-
-
-}
-void consumidor(){ // argumentos int inicio, int fin
+void *productor(){ // int inicio, int final
+  /*  int i = inicio;
+    element operacion;
+    for(i; i < final; i++ ) // desde el índice de inicio (i) hasta el final
+        operacion = arrayOperaciones[i]; // produzco el dato = operacion correspondiente del array de operaciones (global)
+        {
+        pthread_mutex_lock(&mutex);
+        while (queue_full(bufferCircular) == 1) // si buffer lleno
+            pthread_cond_wait(&no_lleno, &mutex); // se bloquea 
+        bufferCircular[posProductor] = i;
+        posProductor = (posProductor + 1) % bufferCircular->length;
+        bufferCircular->n_elementos ++;
+        pthread_cond_signal(&no_vacio);
+        // buffer no vacio
+        pthread_mutex_unlock(&mutex);
+        }   
+    pthread_exit(0); */
+    }
+void *consumidor(){ // argumentos int inicio, int fin
    // ...
 }

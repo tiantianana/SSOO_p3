@@ -21,6 +21,6 @@ struct element * queue_get(queue *q);
 int queue_empty (queue *q);
 int queue_full(queue *q);
 
-void productor ();
-void consumidor ();
+void *productor ();
+void *consumidor ();
 #endif
