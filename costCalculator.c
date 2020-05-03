@@ -81,25 +81,27 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
     int operacionesPorProductor [numeroProductores];
     int k = numeroOperaciones;
     while(k > 0){
+        if(k == numeroOperaciones){ // Primera iteracion
+            for(int i = 0; i < numeroProductores; i++){
+                operacionesPorProductor[i] = 0;
+            } 
+        }
         for(int i = 0; i < numeroProductores; i++){
-            if(k = numeroOperaciones){ // Primera iteracion
-            operacionesPorProductor[i] = 0;
-            }
-            if(k <= 0){
+           if(k == 0){
                 break;
-            }
+            }           
             operacionesPorProductor[i] ++;
             k--;
         }
     }
 
-    printf("Número operaciones %d \n", numeroOperaciones);
-    for(int i = 0; i < numeroProductores; i++) { // PRINT
+    printf("Número operaciones %d \n", numeroOperaciones); // PRINT
+    for(int i = 0; i < numeroProductores; i++) { 
         printf("%d \n", operacionesPorProductor[i]);
     } 
 
 
- /*
+// /*
     int inicio = 0;
     int final = 0;
     pthread_t *threads[numeroProductores];
@@ -109,13 +111,13 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 
     while(i < numeroProductores){
         final = inicio + operacionesPorProductor[i] - 1; // 
-        pthread_create(&threads[i], NULL, productor, NULL); // PASAR LOS INDICES DE OPERACIONES
+        pthread_create(threads[i], NULL, productor, NULL); // PASAR LOS INDICES DE OPERACIONES
         inicio = final + 1; // 2
         i++;
     }
 
     pthread_t th_productor;
-    pthread_create(&th_productor, NULL, consumidor, NULL);
+    pthread_create(th_productor, NULL, consumidor, NULL);
 
     int j = 0;
     while(j < numeroProductores){
@@ -126,7 +128,7 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
     pthread_mutex_destroy(&mutex);
     pthread_cond_destroy(&no_lleno);
     pthread_cond_destroy(&no_vacio);
- */
+// */
 
     free(arrayOperaciones);
     printf("Total: %i €.\n", total);
