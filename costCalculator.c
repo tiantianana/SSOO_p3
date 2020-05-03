@@ -61,10 +61,11 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 
     fclose(id_fichero);
 
+/*
     for(int i = 0; i < numeroOperaciones; i++) { // PRINT
         printf("%d %d \n", arrayOperaciones[i].type, arrayOperaciones[i].time);
     } 
-
+*/ 
 /* ----------- CREAR BUFFER CIRCULAR (reservar el espacio especificado) ---------------------*/
 
     queue *bufferCircular =  queue_init(atoi(argv[3]));
@@ -77,26 +78,36 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 
 
 // Definimos en un array el numero de operaciones de cada productor (ej: 7 operaciones para 5 hilos = 2,2,1,1,1)
-    int *operacionesPorProductor [numeroProductores];
+    int operacionesPorProductor [numeroProductores];
     int k = numeroOperaciones;
     while(k > 0){
         for(int i = 0; i < numeroProductores; i++){
-            if(k > 0){
+            if(k <= 0){
+                break;
+            }
             operacionesPorProductor[i] ++;
             k--;
-            }
         }
     }
 
-/*
+    printf("Número operaciones %d \n", numeroOperaciones);
+    for(int i = 0; i < numeroProductores; i++) { // PRINT
+        printf("%d \n", operacionesPorProductor[i]);
+    } 
+
+
+ /*
     int inicio = 0;
     int final = 0;
     pthread_t *threads[numeroProductores];
     int i = 0;
+
+// 0 1 | 2 3 | 4 | 5 | 6
+
     while(i < numeroProductores){
-       // final = final + operacionesPorProductor[i] -1; // 1 + 2 - 1 ->3
+        final = inicio + operacionesPorProductor[i] - 1; // 
         pthread_create(&threads[i], NULL, productor, NULL); // PASAR LOS INDICES DE OPERACIONES
-       // inicio = final + 1; // 2
+        inicio = final + 1; // 2
         i++;
     }
 
@@ -104,10 +115,7 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
     pthread_create(&th_productor, NULL, consumidor, NULL);
 
     int j = 0;
-
-
     while(j < numeroProductores){
-
         pthread_join(threads[j], NULL);
         j++;
     }
@@ -115,7 +123,7 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
     pthread_mutex_destroy(&mutex);
     pthread_cond_destroy(&no_lleno);
     pthread_cond_destroy(&no_vacio);
-*/
+ */
 
     free(arrayOperaciones);
     printf("Total: %i €.\n", total);
