@@ -17,7 +17,9 @@ typedef struct queue {
   int n_elementos; // numero de operaciones dentro del buffer
   int head;
   int tail;
-
+  pthread_mutex_t mutex;
+  pthread_cond_t no_lleno;
+  pthread_cond_t no_vacio;
 } queue;
 
 queue* queue_init (int maxitems);

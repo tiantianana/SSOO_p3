@@ -21,11 +21,7 @@
  * @param argv
  * @return
  */
-
-pthread_mutex_t mutex;
-pthread_cond_t no_lleno;
-pthread_cond_t no_vacio;
-// element *arrayOperaciones;
+element *arrayOperaciones;
 queue *bufferCircular;
 
 int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Producers> <buff. Size>
@@ -45,13 +41,13 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 		exit(-1);
 	}
 
-    // --------- INSERTAR DATOS (operaciones) en un array de elementos ---------------------------------------------------
+    // --------- INSERCIÓN DE DATOS (operaciones) en un array de elementos ---------------------------------------------------
 
     int numeroOperaciones; 
     fscanf(id_fichero, "%d", &numeroOperaciones);
 
     // array de elementos con TODAS las operaciones (lo utilizarán los productores para pasar los datos al buffer circular)
-    element *arrayOperaciones = malloc(numeroOperaciones * sizeof(element)); 
+    *arrayOperaciones = malloc(numeroOperaciones * sizeof(element)); 
 
     for(int i = 0; i < numeroOperaciones; i++) { // insertar cada linea
         element nuevaOperacion;
@@ -64,23 +60,16 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 
     fclose(id_fichero);
 
-/*
-    for(int i = 0; i < numeroOperaciones; i++) { // PRINT
+/* ------ PRINT --------
+
+    for(int i = 0; i < numeroOperaciones; i++) { 
         printf("%d %d \n", arrayOperaciones[i].type, arrayOperaciones[i].time);
     } 
 */ 
-/* ----------- CREAR BUFFER CIRCULAR (reservar el espacio especificado) ---------------------*/
-
-    *bufferCircular =  queue_init(atoi(argv[3]));
-
-    // DIVIDIR OPERACIONES (INDICES) ENTRE HILOS ...
-
-    pthread_mutex_init(&mutex, NULL);
-    pthread_cond_init(&no_lleno, NULL);
-    pthread_cond_init(&no_vacio,NULL);
 
 
-// Definimos en un array el numero de operaciones de cada productor (ej: 7 operaciones para 5 hilos = 2,2,1,1,1)
+// --------- DIVISIÓN DE TAREAS POR HILO PRODUCTOR (ej: 7 operaciones para 5 hilos = 2,2,1,1,1) ------------
+
     int operacionesPorProductor [numeroProductores];
     int k = numeroOperaciones;
     while(k > 0){
@@ -103,20 +92,19 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
         printf("%d \n", operacionesPorProductor[i]);
     } 
 
+// -------------------------------- CREACIÓN DE BUFFER E HILOS --------------------------------
+    
+    bufferCircular =  queue_init(atoi(argv[3]));
 
-    argumentos args;
+    argumentos args; // Preparamos los argumentos de la función de los hilos productores
     args.inicio = 0;
     args.final = 0;
     pthread_t threads[numeroProductores];
     int i = 0;
 
-// 0 1 | 2 3 | 4 | 5 | 6
-
-    
-
     while(i < numeroProductores){
-        args.final = args.inicio + operacionesPorProductor[i] - 1; // 
-        pthread_create(&threads[i], NULL, &productor, &args); // PASAR LOS INDICES DE OPERACIONES
+        args.final = args.inicio + operacionesPorProductor[i] - 1;
+        pthread_create(&threads[i], NULL, &productor, &args); 
         args.inicio = args.final + 1; // 2
         i++;
     }
@@ -124,6 +112,7 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
     pthread_t th_productor;
     pthread_create(&th_productor, NULL, &consumidor, NULL);
 
+// --------------------------------FINALIZACIÓN DE HILOS Y BUFFER --------------------------------
 
     int j = 0;
     while(j < numeroProductores) {
@@ -131,11 +120,11 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
         j++;
     }
 
-    //pthread_join(threads[j], NULL); // OBTENER VALOR DE RETORNO (COSTE TOTAL) (?)
-    pthread_mutex_destroy(&mutex);
-    pthread_cond_destroy(&no_lleno);
-    pthread_cond_destroy(&no_vacio);
+    pthread_join(th_productor, NULL); // OBTENER VALOR DE RETORNO (COSTE TOTAL) (?)
 
+    queue_destroy(bufferCircular);
+
+// ------------------------- LIBERAMOS ESPACIO Y DEVOLVEMOS COSTE TOTAL --------------------------
 
     free(arrayOperaciones);
     printf("Total: %i €.\n", total);
@@ -145,7 +134,7 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 
 
 
-// ---------- CREAR LAS FUNCIONES PRODUCTOR Y CONSUMIDOR (y definirlas en queue.h) ------------
+// ----------  FUNCIONES PRODUCTOR Y CONSUMIDOR (y definirlas en queue.h) ------------
 
 
 

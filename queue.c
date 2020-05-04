@@ -14,6 +14,9 @@ queue* queue_init(int maxitems){
     q->colaElementos = malloc(maxitems * sizeof(struct element));
     q->head = 0;
     q->tail = -1;
+    pthread_mutex_init(&q->mutex, NULL);
+    pthread_cond_init(&q->no_lleno, NULL);
+    pthread_cond_init(&q->no_vacio,NULL);
     return q;
 }
 
@@ -61,6 +64,9 @@ int queue_full(queue *q){
 
 //To destroy the queue and free the resources
 int queue_destroy(queue *q){
+    pthread_mutex_destroy(&q->mutex);
+    pthread_cond_destroy(&q->no_lleno);
+    pthread_cond_destroy(&q->no_vacio);
     free(q->colaElementos);
     free(q);
     return 0;
