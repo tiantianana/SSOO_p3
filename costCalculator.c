@@ -26,7 +26,7 @@ pthread_mutex_t mutex;
 pthread_cond_t no_lleno;
 pthread_cond_t no_vacio;
 // element *arrayOperaciones;
-// queue *bufferCircular;
+queue *bufferCircular;
 
 int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Producers> <buff. Size>
 
@@ -71,7 +71,7 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 */ 
 /* ----------- CREAR BUFFER CIRCULAR (reservar el espacio especificado) ---------------------*/
 
-    // queue *bufferCircular =  queue_init(atoi(argv[3]));
+    *bufferCircular =  queue_init(atoi(argv[3]));
 
     // DIVIDIR OPERACIONES (INDICES) ENTRE HILOS ...
 
@@ -104,21 +104,22 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
     } 
 
 
-    int inicio = 0;
-    int final = 0;
+    argumentos args;
+    args.inicio = 0;
+    args.final = 0;
     pthread_t threads[numeroProductores];
     int i = 0;
 
 // 0 1 | 2 3 | 4 | 5 | 6
 
+    
 
     while(i < numeroProductores){
-        final = inicio + operacionesPorProductor[i] - 1; // 
-        pthread_create(&threads[i], NULL, &productor, NULL); // PASAR LOS INDICES DE OPERACIONES
-        inicio = final + 1; // 2
+        args.final = args.inicio + operacionesPorProductor[i] - 1; // 
+        pthread_create(&threads[i], NULL, &productor, &args); // PASAR LOS INDICES DE OPERACIONES
+        args.inicio = args.final + 1; // 2
         i++;
     }
-
 
     pthread_t th_productor;
     pthread_create(&th_productor, NULL, &consumidor, NULL);
@@ -156,6 +157,9 @@ void* productor(void* x) { // argumentos int inicio, int fin
 }
 void* consumidor(void* x) { // argumentos int inicio, int fin
     // ...
+
+    //while(queue_empty) -> BLOQUEAR CON WAIT(no_vacio);
+   // queue_get(q)
 
     return NULL;
 }
