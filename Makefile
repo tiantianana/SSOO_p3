@@ -1,5 +1,5 @@
 CC=gcc
-FLAGS=-g -Wall -Werror
+CFLAGS=-g -Wall -Werror
 OBJ= queue costCalculator
 LIBS= -pthread
 
