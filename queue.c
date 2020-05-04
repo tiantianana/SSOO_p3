@@ -3,7 +3,7 @@
 #include <stddef.h>
 #include <string.h>
 #include "queue.h"
-
+#include <pthread.h>
 
 
 //To create a queue
@@ -23,24 +23,31 @@ queue* queue_init(int maxitems){
 
 // To Enqueue an element
 int queue_put(queue *q, struct element *x) {
-
-    if(q->n_elementos == q->length) {
-        printf("Error, cola está llena\n");
-        return -1;
-    } else {
-        q->head = (q->head+1) % q->length; 
-        memcpy(&(q->colaElementos[q->head]), x , sizeof(element)); // q.colaElementos[q.head] = x;
-        q->n_elementos++;
+    pthread_mutex_lock(&q->mutex);
+    while(queue_full(q) == 1){ // si la cola está llena, se bloquea hasta que el consumidor le indique que ya quedan huecos
+        pthread_cond_wait(&q->no_lleno, &q->mutex);
     }
+    q->head = (q->head+1) % q->length; 
+    memcpy(&(q->colaElementos[q->head]), x , sizeof(element));
+    q->n_elementos++;
+
+    pthread_cond_signal(&q->no_vacio); // indica al consumidor que la cola no está vacía(lo desbloquea si estaba esperando a que se encolase un elem)
+    pthread_mutex_unlock(&q->mutex); 
     return 0;
 }
 
 
 // To Dequeue an element.
 struct element* queue_get(queue *q) {
+    pthread_mutex_lock(&q->mutex);
+    while(queue_empty(q) == 1){ // si la cola está vacía, se bloquea hasta que un productor le indique que ya hay un elem que procesar
+        pthread_cond_wait(&q->no_vacio, &q->mutex);
+    }
     struct element *operacion = &(q->colaElementos[q->tail]);
     q->tail = (q->tail +1) % q->length;
     q->n_elementos--;
+    pthread_cond_signal(&q->no_lleno); // indica al consumidor que la cola no está vacía(lo desbloquea si estaba esperando a que se encolase un elem)
+    pthread_mutex_unlock(&q->mutex);
     return operacion;
 }
 

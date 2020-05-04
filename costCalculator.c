@@ -21,7 +21,7 @@
  * @param argv
  * @return
  */
-element *arrayOperaciones;
+
 queue *bufferCircular;
 
 int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Producers> <buff. Size>
@@ -47,7 +47,7 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
     fscanf(id_fichero, "%d", &numeroOperaciones);
 
     // array de elementos con TODAS las operaciones (lo utilizarán los productores para pasar los datos al buffer circular)
-    *arrayOperaciones = malloc(numeroOperaciones * sizeof(element)); 
+    element *arrayOperaciones = malloc(numeroOperaciones * sizeof(element)); 
 
     for(int i = 0; i < numeroOperaciones; i++) { // insertar cada linea
         element nuevaOperacion;
@@ -59,14 +59,6 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
     } 
 
     fclose(id_fichero);
-
-/* ------ PRINT --------
-
-    for(int i = 0; i < numeroOperaciones; i++) { 
-        printf("%d %d \n", arrayOperaciones[i].type, arrayOperaciones[i].time);
-    } 
-*/ 
-
 
 // --------- DIVISIÓN DE TAREAS POR HILO PRODUCTOR (ej: 7 operaciones para 5 hilos = 2,2,1,1,1) ------------
 
@@ -97,6 +89,7 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
     bufferCircular =  queue_init(atoi(argv[3]));
 
     argumentos args; // Preparamos los argumentos de la función de los hilos productores
+    args.arrayOperaciones = arrayOperaciones;
     args.inicio = 0;
     args.final = 0;
     pthread_t threads[numeroProductores];

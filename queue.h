@@ -2,15 +2,16 @@
 #define HEADER_FILE
 
 
-typedef struct argumentos {
-  int inicio; //Machine type
-  int final; //Using time
-}argumentos;
-
 typedef struct element {
   int type; //Machine type
   int time; //Using time
 }element;
+
+typedef struct argumentos {
+  element *arrayOperaciones;
+  int inicio; //Machine type
+  int final; //Using time
+}argumentos;
 typedef struct queue {
   element *colaElementos;
   int length;
