@@ -131,13 +131,14 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 
 
 
-void* productor(void* x) { // argumentos int inicio, int fin
-    //    ...
+void* productor(void* args) { // argumentos int inicio, int fin
+    
+    //gint inicio = (int)args->inicio;
     //int* my_param = (int*)x;
 
     return NULL;
 }
-void* consumidor(void* x) { // argumentos int inicio, int fin
+void* consumidor(void* args) { // argumentos int inicio, int fin
     // ...
 
     //while(queue_empty) -> BLOQUEAR CON WAIT(no_vacio);
