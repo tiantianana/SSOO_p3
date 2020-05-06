@@ -102,8 +102,8 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
         i++;
     }
 
-    pthread_t th_productor;
-    pthread_create(&th_productor, NULL, &consumidor, NULL);
+    pthread_t th_consumidor;
+    pthread_create(&th_consumidor, NULL, &consumidor, &numeroOperaciones);
 
 // --------------------------------FINALIZACIÓN DE HILOS Y BUFFER --------------------------------
 
@@ -113,7 +113,7 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
         j++;
     }
 
-    pthread_join(th_productor, NULL); // OBTENER VALOR DE RETORNO (COSTE TOTAL) (?)
+    total = pthread_join(th_consumidor, NULL); // OBTENER VALOR DE RETORNO (COSTE TOTAL) (?)
 
     queue_destroy(bufferCircular);
 
@@ -131,18 +131,40 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 
 
 
-void* productor(void* args) { // argumentos int inicio, int fin
-    
-    //gint inicio = (int)args->inicio;
-    //int* my_param = (int*)x;
+void* productor(void* arguments) { // argumentos int inicio, int fin 
+    argumentos args = *(argumentos*) arguments;
+    int inicio = args.inicio;
+    int fin = args.final;
+    element *operaciones = args.arrayOperaciones;
+    for(int i = inicio; i <= fin; i++){
+        queue_put(bufferCircular, &operaciones[inicio]);
+            }
 
-    return NULL;
+    pthread_exit(0);
 }
 void* consumidor(void* args) { // argumentos int inicio, int fin
-    // ...
+    int numOperaciones = *(int*)args;
+    int costeTotal = 0;
+    int coste;
+    element operacion;
+    for(int i = 0; i < numOperaciones; i++){
+        memcpy(&operacion, queue_get(bufferCircular) , sizeof(element));
+        switch (operacion.type){
+        case 1:
+            coste = 1;
+            break;
+        case 2:
+            coste = 3;
+            break;
+        case 3:
+            coste = 10;
+            break;        
+        default:
+            coste = 0;
+            break;
+        }
+       costeTotal += (coste * operacion.time);
+    }
 
-    //while(queue_empty) -> BLOQUEAR CON WAIT(no_vacio);
-   // queue_get(q)
-
-    return NULL;
+    pthread_exit(&costeTotal);
 }
