@@ -24,7 +24,7 @@ queue* queue_init(int maxitems){
 // To Enqueue an element
 int queue_put(queue *q, struct element *x) {
     pthread_mutex_lock(&q->mutex);
-    while(queue_full(q) == 1){ // si la cola está llena, se bloquea hasta que el consumidor le indique que ya quedan huecos
+    while(queue_full(q)) { // si la cola está llena, se bloquea hasta que el consumidor le indique que ya quedan huecos
         pthread_cond_wait(&q->no_lleno, &q->mutex);
     } 
     memcpy(&(q->colaElementos[q->head]), x , sizeof(element));
@@ -39,7 +39,7 @@ int queue_put(queue *q, struct element *x) {
 // To Dequeue an element.
 struct element* queue_get(queue *q) {
     pthread_mutex_lock(&q->mutex);
-    while(queue_empty(q) == 1){ // si la cola está vacía, se bloquea hasta que un productor le indique que ya hay un elem que procesar
+    while(queue_empty(q)) { // si la cola está vacía, se bloquea hasta que un productor le indique que ya hay un elem que procesar
         pthread_cond_wait(&q->no_vacio, &q->mutex);
     }
     element *operacion = &(q->colaElementos[q->tail]);
@@ -53,19 +53,11 @@ struct element* queue_get(queue *q) {
 
 //To check queue state
 int queue_empty(queue *q){
-    if(q->n_elementos ==0){
-        return 1;
-    }else{
-        return 0;
-    }
+    return q->n_elementos == 0;
 }
 
 int queue_full(queue *q){
-    if(q->n_elementos == q->length){
-        return 1;
-    }else{
-        return 0;
-    }
+    return q->n_elementos == q->length;
 }
 
 //To destroy the queue and free the resources

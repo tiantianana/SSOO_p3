@@ -60,7 +60,7 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 
     fclose(id_fichero);
 
-// --------- DIVISIÓN DE TAREAS POR HILO PRODUCTOR (ej: 7 operaciones para 5 hilos = 2,2,1,1,1) ------------
+// --------- DIVISIÓN DE TAREAS POR HILO PRODUCTOR ------------
 
     int operacionesPorProductor [numeroProductores];
     int k = numeroOperaciones;
@@ -79,26 +79,21 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
         }
     }
 
-    printf("Número operaciones %d \n", numeroOperaciones); // PRINT
-    for(int i = 0; i < numeroProductores; i++) { 
-        printf("%d \n", operacionesPorProductor[i]);
-    } 
-
 // -------------------------------- CREACIÓN DE BUFFER E HILOS --------------------------------
     
     bufferCircular =  queue_init(atoi(argv[3]));
 
-    argumentos args; // Preparamos los argumentos de la función de los hilos productores
-    args.arrayOperaciones = arrayOperaciones;
-    args.inicio = 0;
-    args.final = 0;
     pthread_t threads[numeroProductores];
     int i = 0;
+    int inicio = 0;
 
     while(i < numeroProductores){
-        args.final = args.inicio + operacionesPorProductor[i] - 1;
-        pthread_create(&threads[i], NULL, &productor, &args); 
-        args.inicio = args.final + 1; // 2
+        argumentos* args = malloc(sizeof(argumentos)); // Preparamos los argumentos de la función de los hilos productores
+        args->arrayOperaciones = arrayOperaciones;
+        args->inicio = inicio;
+        args->final = args->inicio + operacionesPorProductor[i] - 1;
+        pthread_create(&threads[i], NULL, &productor, args);  // Transferimos liberacion de memoria al hilo
+        inicio = args->final + 1; 
         i++;
     }
 
@@ -113,18 +108,16 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
         j++;
     }
 
-    //int total = 0;
-    void *total; 
-    
-    pthread_join(th_consumidor, &total); // OBTENER VALOR DE RETORNO (COSTE TOTAL) (?)
+    int* total; 
+    pthread_join(th_consumidor, (void**)&total);
 
     queue_destroy(bufferCircular);
 
 // ------------------------- LIBERAMOS ESPACIO Y DEVOLVEMOS COSTE TOTAL --------------------------
 
     free(arrayOperaciones);
-    printf("Total: %d €.\n", *(int *)total);
-   // free(total);
+    printf("Total: %d €.\n", *total);
+    free(total);
     return 0;
 
 }
@@ -144,12 +137,14 @@ void* productor(void* arguments) {
         queue_put(bufferCircular, &operaciones[i]);
             }
 
+    free(arguments);
     pthread_exit(0);
 }
+
 void* consumidor(void* args) { 
     int numOperaciones = *(int*)args;
     int *costeTotal = malloc(sizeof(int)); // guardo esta variable en memoria para poder devolverla (ya que los valores en pila se destruyen al terminar el hilo)
-    costeTotal = 0;
+    *costeTotal = 0;
     int coste;
     element operacion;
     for(int i = 0; i < numOperaciones; i++){
@@ -168,7 +163,7 @@ void* consumidor(void* args) {
             coste = 0;
             break;
         }
-       costeTotal += (coste * operacion.time);
+       *costeTotal += (coste * operacion.time);
     }
 
     pthread_exit(costeTotal);
