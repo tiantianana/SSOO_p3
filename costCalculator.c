@@ -32,7 +32,7 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 		return -1;
 	}
     
-    int total = 0;
+    
     int numeroProductores = atoi(argv[2]);
     FILE *id_fichero = fopen(argv[1], "r");
     
@@ -113,14 +113,18 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
         j++;
     }
 
-    total = pthread_join(th_consumidor, NULL); // OBTENER VALOR DE RETORNO (COSTE TOTAL) (?)
+    //int total = 0;
+    void *total; 
+    
+    pthread_join(th_consumidor, &total); // OBTENER VALOR DE RETORNO (COSTE TOTAL) (?)
 
     queue_destroy(bufferCircular);
 
 // ------------------------- LIBERAMOS ESPACIO Y DEVOLVEMOS COSTE TOTAL --------------------------
 
     free(arrayOperaciones);
-    printf("Total: %i €.\n", total);
+    printf("Total: %d €.\n", *(int *)total);
+   // free(total);
     return 0;
 
 }
@@ -131,20 +135,21 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 
 
 
-void* productor(void* arguments) { // argumentos int inicio, int fin 
+void* productor(void* arguments) { 
     argumentos args = *(argumentos*) arguments;
     int inicio = args.inicio;
     int fin = args.final;
     element *operaciones = args.arrayOperaciones;
     for(int i = inicio; i <= fin; i++){
-        queue_put(bufferCircular, &operaciones[inicio]);
+        queue_put(bufferCircular, &operaciones[i]);
             }
 
     pthread_exit(0);
 }
-void* consumidor(void* args) { // argumentos int inicio, int fin
+void* consumidor(void* args) { 
     int numOperaciones = *(int*)args;
-    int costeTotal = 0;
+    int *costeTotal = malloc(sizeof(int)); // guardo esta variable en memoria para poder devolverla (ya que los valores en pila se destruyen al terminar el hilo)
+    costeTotal = 0;
     int coste;
     element operacion;
     for(int i = 0; i < numOperaciones; i++){
@@ -166,5 +171,5 @@ void* consumidor(void* args) { // argumentos int inicio, int fin
        costeTotal += (coste * operacion.time);
     }
 
-    pthread_exit(&costeTotal);
+    pthread_exit(costeTotal);
 }
