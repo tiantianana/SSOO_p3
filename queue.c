@@ -26,8 +26,9 @@ int queue_put(queue *q, struct element *x) {
     pthread_mutex_lock(&q->mutex);
     while(queue_full(q)) { // si la cola está llena, se bloquea hasta que el consumidor le indique que ya quedan huecos
         pthread_cond_wait(&q->no_lleno, &q->mutex);
-    } 
-    memcpy(&(q->colaElementos[q->head]), x , sizeof(element));
+    }
+    (q->colaElementos[q->head]).time = x->time;
+    (q->colaElementos[q->head]).type = x->type;
     q->head = (q->head+1) % q->length;
     q->n_elementos++;
     pthread_cond_signal(&q->no_vacio); // indica al consumidor que la cola no está vacía
@@ -42,7 +43,9 @@ struct element* queue_get(queue *q) {
     while(queue_empty(q)) { // si la cola está vacía, se bloquea hasta que un productor le indique que ya hay un elem que procesar
         pthread_cond_wait(&q->no_vacio, &q->mutex);
     }
-    element *operacion = &(q->colaElementos[q->tail]);
+    element *operacion = malloc(sizeof(element));  // Transferimos liberacion de memoria al hilo consumidor
+    operacion->time = (q->colaElementos[q->tail]).time;
+    operacion->type = (q->colaElementos[q->tail]).type;
     q->tail = (q->tail +1) % q->length;
     q->n_elementos--;
     pthread_cond_signal(&q->no_lleno); // indica al consumidor que la cola no está vacía

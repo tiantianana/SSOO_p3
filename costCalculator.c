@@ -81,8 +81,6 @@ int main (int argc, const char * argv[] ) {
 
 // ------------ INSERCIÓN DE DATOS (operaciones) en un array de elementos ---------------------------------
 
-
-
     // array de elementos con las operaciones a procesar (lo utilizarán los productores para pasar los datos al buffer circular)
     element *arrayOperaciones = malloc(numeroOperaciones * sizeof(element)); 
 
@@ -182,10 +180,9 @@ void* consumidor(void* args) {
     int *costeTotal = malloc(sizeof(int));
     *costeTotal = 0;
     int coste;
-    element operacion;
     for(int i = 0; i < numOperaciones; i++){
-        memcpy(&operacion, queue_get(bufferCircular) , sizeof(element));
-        switch (operacion.type){
+        element *operacion = queue_get(bufferCircular);
+        switch (operacion->type){
         case 1:
             coste = 1;
             break;
@@ -199,8 +196,8 @@ void* consumidor(void* args) {
             coste = 0;
             break;
         }
-       *costeTotal += (coste * operacion.time);
+       *costeTotal += (coste * operacion->time);
+       free(operacion);
     }
-
     pthread_exit(costeTotal);
 }
