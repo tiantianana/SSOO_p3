@@ -9,7 +9,7 @@
 //To create a queue
 queue* queue_init(int maxitems){
     queue *q = (queue *)malloc(sizeof(queue));
-    q->length = maxitems; //tamaño maximo
+    q->length = maxitems;
     q->n_elementos= 0;
     q->colaElementos = malloc(maxitems * sizeof(struct element));
     q->head = 0;
@@ -30,7 +30,7 @@ int queue_put(queue *q, struct element *x) {
     memcpy(&(q->colaElementos[q->head]), x , sizeof(element));
     q->head = (q->head+1) % q->length;
     q->n_elementos++;
-    pthread_cond_signal(&q->no_vacio); // indica al consumidor que la cola no está vacía(lo desbloquea si estaba esperando a que se encolase un elem)
+    pthread_cond_signal(&q->no_vacio); // indica al consumidor que la cola no está vacía
     pthread_mutex_unlock(&q->mutex); 
     return 0;
 }
@@ -45,7 +45,7 @@ struct element* queue_get(queue *q) {
     element *operacion = &(q->colaElementos[q->tail]);
     q->tail = (q->tail +1) % q->length;
     q->n_elementos--;
-    pthread_cond_signal(&q->no_lleno); // indica al consumidor que la cola no está vacía(lo desbloquea si estaba esperando a que se encolase un elem)
+    pthread_cond_signal(&q->no_lleno); // indica al consumidor que la cola no está vacía
     pthread_mutex_unlock(&q->mutex);
     return operacion;
 }

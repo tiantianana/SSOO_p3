@@ -24,7 +24,7 @@
 
 queue *bufferCircular;
 
-int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Producers> <buff. Size>
+int main (int argc, const char * argv[] ) {
 
     if(argc != 4)
 	{
@@ -41,12 +41,12 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 		exit(-1);
 	}
 
-    // --------- INSERCIÓN DE DATOS (operaciones) en un array de elementos ---------------------------------------------------
+// ------------ INSERCIÓN DE DATOS (operaciones) en un array de elementos ---------------------------------
 
     int numeroOperaciones; 
     fscanf(id_fichero, "%d", &numeroOperaciones);
 
-    // array de elementos con TODAS las operaciones (lo utilizarán los productores para pasar los datos al buffer circular)
+    // array de elementos con las operaciones a procesar (lo utilizarán los productores para pasar los datos al buffer circular)
     element *arrayOperaciones = malloc(numeroOperaciones * sizeof(element)); 
 
     for(int i = 0; i < numeroOperaciones; i++) { // insertar cada linea
@@ -60,7 +60,7 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 
     fclose(id_fichero);
 
-// --------- DIVISIÓN DE TAREAS POR HILO PRODUCTOR ------------
+// ------------------------ DIVISIÓN DE TAREAS POR HILO PRODUCTOR ------------------------------------------
 
     int operacionesPorProductor [numeroProductores];
     int k = numeroOperaciones;
@@ -122,10 +122,7 @@ int main (int argc, const char * argv[] ) { // ./calculator <file_name> <num. Pr
 
 }
 
-
-
-// ----------  FUNCIONES PRODUCTOR Y CONSUMIDOR (y definirlas en queue.h) ------------
-
+// ----------------------  FUNCIONES PRODUCTOR Y CONSUMIDOR ------------------------
 
 
 void* productor(void* arguments) { 
@@ -143,7 +140,7 @@ void* productor(void* arguments) {
 
 void* consumidor(void* args) { 
     int numOperaciones = *(int*)args;
-    int *costeTotal = malloc(sizeof(int)); // guardo esta variable en memoria para poder devolverla (ya que los valores en pila se destruyen al terminar el hilo)
+    int *costeTotal = malloc(sizeof(int));
     *costeTotal = 0;
     int coste;
     element operacion;
