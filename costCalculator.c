@@ -32,8 +32,13 @@ int main (int argc, const char * argv[] ) {
 		return -1;
 	}
     
-    
     int numeroProductores = atoi(argv[2]);
+    
+    if(numeroProductores <= 0 || atoi(argv[3]) <= 0){
+        printf("Numero de productores o tamaño de buffer invalido");
+		return -1;
+    }
+
     FILE *id_fichero = fopen(argv[1], "r");
     
     if(id_fichero == NULL){
