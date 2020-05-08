@@ -41,20 +41,54 @@ int main (int argc, const char * argv[] ) {
 
     FILE *id_fichero = fopen(argv[1], "r");
     
+    int size;
     if(id_fichero == NULL){
 		perror("error en la apertura del fichero especificado");
-		exit(-1);
-	}
+		return -1;
+	} else {
+        fseek (id_fichero, 0, SEEK_END);
+        size = ftell(id_fichero);
+        if (size == 0) {
+            fclose(id_fichero);
+            perror("el fichero especificado está vacío\n");
+            return -1;
+        }
+    }
 
-// ------------ INSERCIÓN DE DATOS (operaciones) en un array de elementos ---------------------------------
+    rewind(id_fichero);
+
+// ----------- COMPROBAMOS QUE NO HAYAN MENOS LINEAS (OPERACIONES) DE LAS INDICADAS -----------------------
 
     int numeroOperaciones; 
     fscanf(id_fichero, "%d", &numeroOperaciones);
+
+    char c;
+    int lineas = 0;
+
+    for (c = getc(id_fichero); c != EOF; c = getc(id_fichero)){
+            if (c == '\n')
+                lineas = lineas + 1; 
+    }
+
+    if(lineas <= numeroOperaciones){
+        fclose(id_fichero);
+        perror("el fichero especificado no contiene las suficientes operaciones\n");
+        return -1;
+    }
+
+    rewind(id_fichero);
+    fscanf(id_fichero, "%d", &numeroOperaciones);
+
+// ------------ INSERCIÓN DE DATOS (operaciones) en un array de elementos ---------------------------------
+
+
 
     // array de elementos con las operaciones a procesar (lo utilizarán los productores para pasar los datos al buffer circular)
     element *arrayOperaciones = malloc(numeroOperaciones * sizeof(element)); 
 
     for(int i = 0; i < numeroOperaciones; i++) { // insertar cada linea
+
+
         element nuevaOperacion;
         int indice;
         fscanf(id_fichero, "%d", &indice);
