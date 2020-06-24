@@ -32,61 +32,24 @@ int main (int argc, const char * argv[] ) {
 		return -1;
 	}
     
-    int numeroProductores = atoi(argv[2]);
     
-    if(numeroProductores <= 0 || atoi(argv[3]) <= 0){
-        printf("Numero de productores o tamaño de buffer invalido");
-		return -1;
-    }
-
+    int numeroProductores = atoi(argv[2]);
     FILE *id_fichero = fopen(argv[1], "r");
     
-    int size;
     if(id_fichero == NULL){
 		perror("error en la apertura del fichero especificado");
-		return -1;
-	} else {
-        fseek (id_fichero, 0, SEEK_END);
-        size = ftell(id_fichero);
-        if (size == 0) {
-            fclose(id_fichero);
-            perror("el fichero especificado está vacío\n");
-            return -1;
-        }
-    }
+		exit(-1);
+	}
 
-    rewind(id_fichero);
-
-// ----------- COMPROBAMOS QUE NO HAYAN MENOS LINEAS (OPERACIONES) DE LAS INDICADAS -----------------------
+// ------------ INSERCIÓN DE DATOS (operaciones) en un array de elementos ---------------------------------
 
     int numeroOperaciones; 
     fscanf(id_fichero, "%d", &numeroOperaciones);
-
-    char c;
-    int lineas = 0;
-
-    for (c = getc(id_fichero); c != EOF; c = getc(id_fichero)){
-            if (c == '\n')
-                lineas = lineas + 1; 
-    }
-
-    if(lineas <= numeroOperaciones){
-        fclose(id_fichero);
-        perror("el fichero especificado no contiene las suficientes operaciones\n");
-        return -1;
-    }
-
-    rewind(id_fichero);
-    fscanf(id_fichero, "%d", &numeroOperaciones);
-
-// ------------ INSERCIÓN DE DATOS (operaciones) en un array de elementos ---------------------------------
 
     // array de elementos con las operaciones a procesar (lo utilizarán los productores para pasar los datos al buffer circular)
     element *arrayOperaciones = malloc(numeroOperaciones * sizeof(element)); 
 
     for(int i = 0; i < numeroOperaciones; i++) { // insertar cada linea
-
-
         element nuevaOperacion;
         int indice;
         fscanf(id_fichero, "%d", &indice);
@@ -180,9 +143,10 @@ void* consumidor(void* args) {
     int *costeTotal = malloc(sizeof(int));
     *costeTotal = 0;
     int coste;
+    element operacion;
     for(int i = 0; i < numOperaciones; i++){
-        element *operacion = queue_get(bufferCircular);
-        switch (operacion->type){
+        memcpy(&operacion, queue_get(bufferCircular) , sizeof(element));
+        switch (operacion.type){
         case 1:
             coste = 1;
             break;
@@ -196,8 +160,8 @@ void* consumidor(void* args) {
             coste = 0;
             break;
         }
-       *costeTotal += (coste * operacion->time);
-       free(operacion);
+       *costeTotal += (coste * operacion.time);
     }
+
     pthread_exit(costeTotal);
 }
